@@ -18,16 +18,22 @@ export type product = {
 export default function Home() {
 
 
-    const [currentPage , setCurrentPage] = useState<Number>(1)
+    const [currentPage , setCurrentPage] = useState<number>(1)
 
 
-    const { data:products, isLoading, error } = useQuery('posts', async ()=>{
+    const { data:products, isLoading, error , refetch , isFetching} = useQuery('posts', async ()=>{
       const res = await fetch(`https://reqres.in/api/products${'?page=' + currentPage}&per_page=5`)
       return res.json()
     },
     {
-      refetchOnWindowFocus: false
+      refetchOnWindowFocus: false,
+      
     })
+
+    function handlePage(page: number){
+      setCurrentPage(currentPage+page)
+      refetch()
+    }
 
   
   if (isLoading) return <div>Loading...</div>
@@ -57,6 +63,12 @@ export default function Home() {
               <p>{product.name}</p>
               <p>{product.year}</p>
             </div>  )}
+
+            <div className={styles.pagination}>
+              <button onClick={()=>handlePage(-1)} disabled={isFetching} >Previous</button>
+              <p>{currentPage}</p>
+              <button onClick={()=>handlePage(1)  } disabled={isFetching} >NExt</button>
+            </div>
 
         </div>
 
