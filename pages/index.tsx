@@ -29,8 +29,9 @@ export default function Home() {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const [modalProduct, setModalProduct] = useState<product>()
 
-    const {query} = useRouter()
-    console.log(query)
+    const {query } = useRouter()
+    const router = useRouter()
+    console.log(router)
 
     const { data:products, isLoading, error , refetch , isFetching} = useQuery([ search , currentPage], async ()=>{
       const res = await fetch(`https://reqres.in/api/products?page=${currentPage}&per_page=5&id=${search}`)
@@ -42,11 +43,21 @@ export default function Home() {
     })
 
     function handlePage(page: number){
+
+      router.push(`/?page=${currentPage+page}`)
       setCurrentPage(currentPage+page)
       refetch()
+
     }
 
     function handleSearch(){
+      
+      if(searchInput === '') {
+        router.push(`/`)
+      }else{
+        router.push(`/?id=${searchInput}`)
+      }
+      
       setSearch(searchInput)
       refetch()
       
@@ -100,8 +111,6 @@ export default function Home() {
             </div>
 
              
-
-            
                 {
 
                 !products.data ? 
