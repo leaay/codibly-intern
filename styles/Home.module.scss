@@ -36,6 +36,18 @@
   font-size: .75rem;
   border: none;
   outline: none;
+  
+  &:is(button){
+    &:hover{
+      outline: solid 2px #ccc;
+      cursor: pointer;
+    }
+    &:focus-visible{
+      outline: solid 2px #ccc;
+    }
+  }
+  
+
 }
 .pagination{
   display: flex;

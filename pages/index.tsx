@@ -7,6 +7,8 @@ import {} from '@mui/icons-material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SearchIcon from '@mui/icons-material/Search';
+import ProductModal from '@/components/ProductModal'
+import { useRouter } from 'next/router'
 
 export type product = {
   id: number,
@@ -24,8 +26,11 @@ export default function Home() {
     const [currentPage , setCurrentPage] = useState<number>(1)
     const [searchInput , setSearchInput] = useState<string>('')
     const [search, setSearch] = useState<string>('')
-    const [list , setList] = useState<product[]>()
+    const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+    const [modalProduct, setModalProduct] = useState<product>()
 
+    const router = useRouter()
+    console.log(router)
 
     const { data:products, isLoading, error , refetch , isFetching} = useQuery([ search , currentPage], async ()=>{
       const res = await fetch(`https://reqres.in/api/products?page=${currentPage}&per_page=5&id=${search}`)
@@ -47,13 +52,15 @@ export default function Home() {
       
     }
 
+    function handleModal(product: product){
+      setModalProduct(product)
+      setIsModalOpen(true)
+    }
+
   
   if (isLoading) return <div>Loading...</div>
-  if (error) return <div>Something went wrong, please try agian later.</div>
-  console.log(products)
-
   
-
+  if (error) return <div>Something went wrong, please try agian later.</div>
 
   return (
     <>
@@ -88,21 +95,22 @@ export default function Home() {
                 
                   search === '' ?
                 
-                      products.data.map((product: product)=> <div className={styles.productItem} style={{backgroundColor:`${product.color}7A`}} key={product.id}>
+                      products.data.map((product: product)=> <button onClick={()=>handleModal(product)} className={styles.productItem} style={{backgroundColor:`${product.color}7A`}} key={product.id}>
                         <p>{product.id}</p>
                         <p>{product.name}</p>
                         <p>{product.year}</p>
-                      </div> ) : 
+                      </button> ) : 
 
-                      <div className={styles.productItem} style={{backgroundColor:`${products?.data.color}7A`}} >
-                      <p>{products?.data.id}</p>
-                      <p>{products?.data.name}</p>
-                      <p>{products?.data.year}</p>
-                      </div>
+                      <button onClick={()=>handleModal(products.data)}  className={styles.productItem} style={{backgroundColor:`${products?.data.color}7A`}} >
+                        <p>{products?.data.id}</p>
+                        <p>{products?.data.name}</p>
+                        <p>{products?.data.year}</p>
+                      </button>
 
                 }
 
-                
+              
+            {isModalOpen && <ProductModal data={modalProduct} close={setIsModalOpen} />}
 
 
 
