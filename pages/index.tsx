@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '@/styles/Home.module.scss'
 import { useQuery } from 'react-query'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {} from '@mui/icons-material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -29,8 +29,8 @@ export default function Home() {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
     const [modalProduct, setModalProduct] = useState<product>()
 
-    const router = useRouter()
-    console.log(router)
+    const {query} = useRouter()
+    console.log(query)
 
     const { data:products, isLoading, error , refetch , isFetching} = useQuery([ search , currentPage], async ()=>{
       const res = await fetch(`https://reqres.in/api/products?page=${currentPage}&per_page=5&id=${search}`)
@@ -57,9 +57,24 @@ export default function Home() {
       setIsModalOpen(true)
     }
 
+
+  useEffect(()=>{
+
+    if(query.page){
+      setCurrentPage(Number(query.page))
+      refetch()
+    }
+    if(query.id){
+      setSearch(String(query.id))
+      refetch()
+    }
+
+
+  },[query])
+
   
   if (isLoading) return <div>Loading...</div>
-  
+
   if (error) return <div>Something went wrong, please try agian later.</div>
 
   return (
